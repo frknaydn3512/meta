@@ -8,8 +8,6 @@ COPY AdReport.Application/AdReport.Application.csproj AdReport.Application/
 COPY AdReport.Domain/AdReport.Domain.csproj AdReport.Domain/
 COPY AdReport.Infrastructure/AdReport.Infrastructure.csproj AdReport.Infrastructure/
 
-ENV NUGET_FALLBACK_PACKAGES=""
-
 RUN dotnet restore AdReport.API/AdReport.API.csproj
 
 COPY . .
