@@ -102,6 +102,12 @@ public class MetaAccountService : IMetaAccountService
         if (account == null)
             return ApiResponse<object>.ErrorResult("Meta account not found");
 
+        // Delete related reports first to satisfy FK constraint (Restrict behavior)
+        var relatedReports = await _context.Reports
+            .Where(r => r.MetaAccountId == accountId)
+            .ToListAsync();
+
+        _context.Reports.RemoveRange(relatedReports);
         _context.MetaAccounts.Remove(account);
         await _context.SaveChangesAsync();
 

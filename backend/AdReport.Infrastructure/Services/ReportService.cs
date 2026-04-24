@@ -245,7 +245,8 @@ public class ReportService : IReportService
             Slug = report.Slug,
             HasPdf = !string.IsNullOrEmpty(report.PdfPath),
             CreatedAt = report.CreatedAt,
-            CompletedAt = report.CompletedAt
+            CompletedAt = report.CompletedAt,
+            ErrorMessage = report.ErrorMessage
         };
     }
 

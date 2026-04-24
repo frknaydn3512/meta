@@ -17,6 +17,7 @@ public class ReportDto
     public bool HasPdf { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? CompletedAt { get; set; }
+    public string? ErrorMessage { get; set; }
 }
 
 public class CreateReportDto

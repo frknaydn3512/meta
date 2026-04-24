@@ -128,9 +128,17 @@ export default function Reports() {
               <p className="text-xs text-gray-500">{r.accountName}</p>
             </div>
             <div className="flex items-center gap-3">
-              <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${STATUS_COLOR[r.status] ?? ''}`}>
+              <span
+                className={`text-xs font-medium px-2 py-0.5 rounded-full ${STATUS_COLOR[r.status] ?? ''}`}
+                title={r.status === 'Failed' && r.errorMessage ? r.errorMessage : undefined}
+              >
                 {STATUS_LABEL[r.status] ?? r.status}
               </span>
+              {r.status === 'Failed' && r.errorMessage && (
+                <span className="text-xs text-red-500 max-w-xs truncate" title={r.errorMessage}>
+                  {r.errorMessage}
+                </span>
+              )}
               {r.status === 'Completed' && (
                 <button
                   onClick={() => handleDownload(r.id)}

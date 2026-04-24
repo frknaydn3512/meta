@@ -54,7 +54,11 @@ public class MetaApiClient : IMetaApiClient
             + $"&access_token={accessToken}";
 
         var response = await _http.GetAsync(url);
-        response.EnsureSuccessStatusCode();
+        if (!response.IsSuccessStatusCode)
+        {
+            var errorBody = await response.Content.ReadAsStringAsync();
+            throw new InvalidOperationException($"Meta API error ({(int)response.StatusCode}): {errorBody}");
+        }
 
         var json = await response.Content.ReadAsStringAsync();
         using var doc = JsonDocument.Parse(json);
@@ -131,7 +135,11 @@ public class MetaApiClient : IMetaApiClient
         // Use a simpler two-step approach: first get campaigns, then get insights
         var campaignUrl = $"{_baseUrl}/act_{accountId}/campaigns?fields={fields}&access_token={accessToken}";
         var response = await _http.GetAsync(campaignUrl);
-        response.EnsureSuccessStatusCode();
+        if (!response.IsSuccessStatusCode)
+        {
+            var errorBody = await response.Content.ReadAsStringAsync();
+            throw new InvalidOperationException($"Meta API error ({(int)response.StatusCode}): {errorBody}");
+        }
 
         var json = await response.Content.ReadAsStringAsync();
         using var doc = JsonDocument.Parse(json);
