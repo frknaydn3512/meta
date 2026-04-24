@@ -21,15 +21,11 @@ export default function ReportDetail() {
     getReport(id).then(({ data }) => setReport(data.data))
   }, [id])
 
-  async function handleDownload() {
+  async function handleViewPdf() {
     try {
       const { data } = await downloadReport(id)
       const url = URL.createObjectURL(new Blob([data], { type: 'application/pdf' }))
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `report_${id}.pdf`
-      a.click()
-      URL.revokeObjectURL(url)
+      window.open(url, '_blank')
     } catch {
       toast.error(t('download_failed'))
     }
@@ -87,7 +83,7 @@ export default function ReportDetail() {
 
       {report.status === 'Completed' && (
         <div className="flex gap-3">
-          <button onClick={handleDownload} className="bg-blue-600 text-white text-sm font-medium px-5 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+          <button onClick={handleViewPdf} className="bg-blue-600 text-white text-sm font-medium px-5 py-2 rounded-lg hover:bg-blue-700 transition-colors">
             {t('download_pdf')}
           </button>
           <button onClick={handleSendEmail} disabled={sending} className="border border-gray-300 text-gray-700 text-sm font-medium px-5 py-2 rounded-lg hover:bg-gray-50 disabled:opacity-50 transition-colors">

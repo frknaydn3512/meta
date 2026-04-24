@@ -9,5 +9,7 @@ public interface IEmailService
         string toEmail,
         string toName,
         string subject,
-        string htmlBody);
+        string htmlBody,
+        byte[]? pdfAttachment = null,
+        string? pdfFileName = null);
 }

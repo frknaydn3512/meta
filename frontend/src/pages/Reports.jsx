@@ -38,11 +38,7 @@ export default function Reports() {
     try {
       const { data } = await downloadReport(id)
       const url = URL.createObjectURL(new Blob([data], { type: 'application/pdf' }))
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `report_${id}.pdf`
-      a.click()
-      URL.revokeObjectURL(url)
+      window.open(url, '_blank')
     } catch {
       toast.error(t('download_failed'))
     }

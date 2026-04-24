@@ -6,7 +6,7 @@ using AdReport.Application.Common;
 namespace AdReport.API.Controllers;
 
 [ApiController]
-[Route("r")]
+[Route("api/r")]
 public class PublicReportController : ControllerBase
 {
     private readonly IReportService _reportService;

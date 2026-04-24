@@ -26,14 +26,19 @@ public class EmailService : IEmailService
     }
 
     /// <inheritdoc/>
-    public async Task SendReportEmailAsync(string toEmail, string toName, string subject, string htmlBody)
+    public async Task SendReportEmailAsync(string toEmail, string toName, string subject, string htmlBody,
+        byte[]? pdfAttachment = null, string? pdfFileName = null)
     {
         var message = new MimeMessage();
         message.From.Add(new MailboxAddress(_fromName, _fromEmail));
         message.To.Add(new MailboxAddress(toName, toEmail));
         message.Subject = subject;
 
-        message.Body = new BodyBuilder { HtmlBody = htmlBody }.ToMessageBody();
+        var builder = new BodyBuilder { HtmlBody = htmlBody };
+        if (pdfAttachment != null)
+            builder.Attachments.Add(pdfFileName ?? "report.pdf", pdfAttachment, new MimeKit.ContentType("application", "pdf"));
+
+        message.Body = builder.ToMessageBody();
 
         using var client = new SmtpClient();
         await client.ConnectAsync(_smtpHost, _smtpPort, SecureSocketOptions.StartTls);

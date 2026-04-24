@@ -10,7 +10,7 @@ export default function PublicReport() {
   const t = useT()
 
   useEffect(() => {
-    axios.get(`/r/${slug}`)
+    axios.get(`/api/r/${slug}`)
       .then(({ data }) => setReport(data.data))
       .catch(() => setError(t('report_not_found')))
   }, [slug])

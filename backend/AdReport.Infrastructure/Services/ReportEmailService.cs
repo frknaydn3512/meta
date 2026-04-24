@@ -54,11 +54,21 @@ public class ReportEmailService : IReportEmailService
             reportPeriod: period,
             reportUrl: reportUrl);
 
+        byte[]? pdfBytes = null;
+        string? pdfFileName = null;
+        if (!string.IsNullOrEmpty(report.PdfPath) && File.Exists(report.PdfPath))
+        {
+            pdfBytes = await File.ReadAllBytesAsync(report.PdfPath);
+            pdfFileName = $"report_{new DateTime(report.Year, report.Month, 1):yyyy-MM}.pdf";
+        }
+
         await _emailService.SendReportEmailAsync(
             toEmail: report.Client.Email,
             toName: report.Client.Name,
             subject: $"Your {period} Ads Report Is Ready — {template?.AgencyDisplayName ?? report.Agency.Name}",
-            htmlBody: html);
+            htmlBody: html,
+            pdfAttachment: pdfBytes,
+            pdfFileName: pdfFileName);
     }
 
     /// <inheritdoc/>
