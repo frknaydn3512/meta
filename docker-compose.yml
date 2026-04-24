@@ -1,0 +1,87 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: adreport_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: adreport
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: adreport_pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8081:80"
+    depends_on:
+      - postgres
+
+  backend:
+    image: mcr.microsoft.com/dotnet/sdk:10.0
+    container_name: adreport_backend
+    working_dir: /src
+    volumes:
+      - ./backend:/src
+    command: >
+      sh -c "dotnet restore AdReport.API/AdReport.API.csproj &&
+             dotnet watch run --project AdReport.API/AdReport.API.csproj
+             --urls http://+:8080"
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=adreport;Username=postgres;Password=password"
+      Jwt__Secret: dev-secret-that-is-at-least-32-characters-long
+      Jwt__Issuer: AdReport
+      Jwt__Audience: AdReport
+      Jwt__ExpiryMinutes: 60
+      RefreshToken__ExpiryDays: 30
+      Encryption__Key: dev-encryption-key-at-least-32-chars-xx
+      MetaApi__AppId: ""
+      MetaApi__AppSecret: ""
+      MetaApi__BaseUrl: "https://graph.facebook.com/v19.0"
+      Email__SmtpHost: smtp.gmail.com
+      Email__SmtpPort: 587
+      Email__SmtpUser: ""
+      Email__SmtpPassword: ""
+      Email__FromEmail: ""
+      Email__FromName: AdReport
+      App__BaseUrl: http://localhost:5173
+      QuestPdf__License: Community
+      ASPNETCORE_ENVIRONMENT: Development
+
+  frontend:
+    image: node:22-alpine
+    container_name: adreport_frontend
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+      - frontend_node_modules:/app/node_modules
+    command: sh -c "npm ci && npm run dev -- --host 0.0.0.0"
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    environment:
+      VITE_PROXY_TARGET: http://backend:8080
+
+volumes:
+  postgres_data:
+  frontend_node_modules:

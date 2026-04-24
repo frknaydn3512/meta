@@ -1,0 +1,6 @@
+@AdReport.API_HostAddress = http://localhost:5118
+
+GET {{AdReport.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

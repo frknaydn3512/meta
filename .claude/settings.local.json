@@ -1,0 +1,41 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir backend)",
+      "Bash(dotnet new sln -n AdReport)",
+      "Bash(dotnet sln add AdReport.API/AdReport.API.csproj AdReport.Application/AdReport.Application.csproj AdReport.Domain/AdReport.Domain.csproj AdReport.Infrastructure/AdReport.Infrastructure.csproj)",
+      "Bash(dotnet add AdReport.API/AdReport.API.csproj reference AdReport.Application/AdReport.Application.csproj)",
+      "Bash(dotnet add AdReport.Application/AdReport.Application.csproj reference AdReport.Domain/AdReport.Domain.csproj)",
+      "Bash(dotnet add AdReport.Infrastructure/AdReport.Infrastructure.csproj reference AdReport.Domain/AdReport.Domain.csproj)",
+      "Bash(dotnet add AdReport.API/AdReport.API.csproj reference AdReport.Infrastructure/AdReport.Infrastructure.csproj)",
+      "Bash(dotnet add package Microsoft.EntityFrameworkCore)",
+      "Bash(dotnet add package Microsoft.EntityFrameworkCore.Design)",
+      "Bash(dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL)",
+      "Bash(dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer)",
+      "Bash(dotnet add package AutoMapper)",
+      "Bash(dotnet add package AutoMapper.Extensions.Microsoft.DependencyInjection)",
+      "Bash(dotnet add package FluentValidation.AspNetCore)",
+      "Bash(dotnet add package Serilog.AspNetCore)",
+      "Bash(dotnet add package QuestPDF)",
+      "Bash(dotnet add package Hangfire)",
+      "Bash(dotnet add package Hangfire.PostgreSql)",
+      "Bash(dotnet add package FluentValidation)",
+      "Bash(dotnet add package MailKit)",
+      "Bash(dotnet ef migrations add InitialCreate)",
+      "Bash(dotnet add package BCrypt.Net-Next)",
+      "Bash(dotnet build)",
+      "Bash(dotnet add package Swashbuckle.AspNetCore)",
+      "Bash(dotnet ef migrations add AddAgencyClients)",
+      "Bash(dotnet add package System.IdentityModel.Tokens.Jwt)",
+      "Bash(dotnet add package Microsoft.IdentityModel.Tokens)",
+      "Bash(dotnet build *)",
+      "Bash(dotnet ef migrations *)",
+      "Bash(dotnet add *)",
+      "Bash(npm run *)",
+      "Bash(dotnet remove *)",
+      "Bash(timeout 20 dotnet run --project backend/AdReport.API)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

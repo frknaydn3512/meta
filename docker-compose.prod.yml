@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: adreport_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: adreport
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: adreport_backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ConnectionStrings__DefaultConnection: "Host=postgres;Database=adreport;Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD}"
+      Jwt__Secret: ${JWT_SECRET}
+      Jwt__Issuer: AdReport
+      Jwt__Audience: AdReport
+      Jwt__ExpiryMinutes: 60
+      RefreshToken__ExpiryDays: 30
+      Encryption__Key: ${ENCRYPTION_KEY}
+      MetaApi__AppId: ${META_APP_ID}
+      MetaApi__AppSecret: ${META_APP_SECRET}
+      MetaApi__BaseUrl: "https://graph.facebook.com/v19.0"
+      QuestPdf__License: ${QUESTPDF_LICENSE:-Community}
+      Email__SmtpHost: ${SMTP_HOST}
+      Email__SmtpPort: ${SMTP_PORT:-587}
+      Email__SmtpUser: ${SMTP_USER}
+      Email__SmtpPassword: ${SMTP_PASS}
+      Email__FromEmail: ${SMTP_USER}
+      Email__FromName: ${FROM_NAME:-AdReport}
+      App__BaseUrl: ${APP_BASE_URL:-http://localhost}
+      ASPNETCORE_ENVIRONMENT: Production
+    volumes:
+      - report_files:/app/wwwroot/reports
+      - logo_files:/app/wwwroot/logos
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: adreport_frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+  report_files:
+  logo_files:

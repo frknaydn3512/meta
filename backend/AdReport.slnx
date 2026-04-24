@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="AdReport.API/AdReport.API.csproj" />
+  <Project Path="AdReport.Application/AdReport.Application.csproj" />
+  <Project Path="AdReport.Domain/AdReport.Domain.csproj" />
+  <Project Path="AdReport.Infrastructure/AdReport.Infrastructure.csproj" />
+</Solution>
