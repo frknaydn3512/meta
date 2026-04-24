@@ -1,19 +1,23 @@
 ﻿import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getClients, createClient, deleteClient } from '../api/clients'
+import { getMetaAccounts } from '../api/metaAccounts'
 import useT from '../hooks/useT'
 import toast from 'react-hot-toast'
 
 export default function Clients() {
   const [clients, setClients] = useState([])
+  const [connectedClientIds, setConnectedClientIds] = useState(new Set())
   const [showForm, setShowForm] = useState(false)
   const [form, setForm] = useState({ name: '', email: '', industry: '' })
   const [loading, setLoading] = useState(false)
   const t = useT()
 
   async function load() {
-    const { data } = await getClients()
-    setClients(data.data ?? [])
+    const [clientsRes, metaRes] = await Promise.all([getClients(), getMetaAccounts()])
+    setClients(clientsRes.data.data ?? [])
+    const ids = new Set((metaRes.data.data ?? []).map((a) => a.clientId))
+    setConnectedClientIds(ids)
   }
 
   useEffect(() => { load() }, [])
@@ -96,9 +100,21 @@ export default function Clients() {
               <Link to={`/clients/${c.id}`} className="text-sm font-medium text-blue-600 hover:underline">{c.name}</Link>
               <p className="text-xs text-gray-500">{c.email} {c.industry ? `· ${c.industry}` : ''}</p>
             </div>
-            <button onClick={() => handleDelete(c.id, c.name)} className="text-xs text-red-500 hover:text-red-700">
-              {t('delete')}
-            </button>
+            <div className="flex items-center gap-4">
+              {connectedClientIds.has(c.id) ? (
+                <span className="flex items-center gap-1 text-xs font-medium text-green-600">
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />
+                  Meta Bağlı
+                </span>
+              ) : (
+                <Link to={`/clients/${c.id}`} className="text-xs text-gray-400 hover:text-blue-600 transition-colors">
+                  + Meta Bağla
+                </Link>
+              )}
+              <button onClick={() => handleDelete(c.id, c.name)} className="text-xs text-red-500 hover:text-red-700">
+                {t('delete')}
+              </button>
+            </div>
           </div>
         ))}
       </div>
