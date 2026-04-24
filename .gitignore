@@ -1,0 +1,22 @@
+# Environment
+.env
+.env.local
+.env.*.local
+
+# .NET build output
+**/bin/
+**/obj/
+**/.vs/
+*.user
+
+# Node
+node_modules/
+frontend/dist/
+
+# Logs
+logs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
