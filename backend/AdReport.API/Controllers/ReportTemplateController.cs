@@ -9,7 +9,7 @@ namespace AdReport.API.Controllers;
 [ApiController]
 [Route("api/template")]
 [Authorize]
-public class ReportTemplateController : ControllerBase
+public class ReportTemplateController : ApiControllerBase
 {
     private readonly IReportTemplateService _templateService;
 
@@ -18,19 +18,13 @@ public class ReportTemplateController : ControllerBase
         _templateService = templateService;
     }
 
-    private int GetCurrentAgencyId()
-    {
-        var agencyIdClaim = User.FindFirst("agencyId")?.Value;
-        return int.Parse(agencyIdClaim!);
-    }
-
     /// <summary>
     /// Returns the current agency's white-label template.
     /// </summary>
     [HttpGet]
     public async Task<ActionResult<ApiResponse<ReportTemplateDto>>> GetTemplate()
     {
-        var agencyId = GetCurrentAgencyId();
+        if (TryGetAgencyId() is not int agencyId) return AgencyNotFound<ApiResponse<ReportTemplateDto>>();
         var result = await _templateService.GetTemplateAsync(agencyId);
         return Ok(result);
     }
@@ -41,7 +35,7 @@ public class ReportTemplateController : ControllerBase
     [HttpPut]
     public async Task<ActionResult<ApiResponse<ReportTemplateDto>>> UpdateTemplate(ReportTemplateUpdateDto request)
     {
-        var agencyId = GetCurrentAgencyId();
+        if (TryGetAgencyId() is not int agencyId) return AgencyNotFound<ApiResponse<ReportTemplateDto>>();
         var result = await _templateService.UpdateTemplateAsync(agencyId, request);
         return Ok(result);
     }
@@ -56,7 +50,7 @@ public class ReportTemplateController : ControllerBase
         if (file == null || file.Length == 0)
             return BadRequest(ApiResponse<string>.ErrorResult("No file provided"));
 
-        var agencyId = GetCurrentAgencyId();
+        if (TryGetAgencyId() is not int agencyId) return AgencyNotFound<ApiResponse<string>>();
 
         await using var stream = file.OpenReadStream();
         var result = await _templateService.UploadLogoAsync(agencyId, stream, file.FileName);

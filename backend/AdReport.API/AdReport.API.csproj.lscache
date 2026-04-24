@@ -58,6 +58,7 @@ TemporaryDependencyNodeTargetIdentifier=net10.0
 [sourceFiles]
 Controllers/
  AgencyClientsController.cs
+ ApiControllerBase.cs
  AuthController.cs
  MetaAccountsController.cs
  PublicReportController.cs
@@ -76,6 +77,7 @@ Migrations/
  20260423060706_AddMetaAccounts.Designer.cs
  20260423061151_AddReportsAndTemplates.cs
  20260423061151_AddReportsAndTemplates.Designer.cs
+ 20260424000000_AddInsightsToReport.cs
  AppDbContextModelSnapshot.cs
 obj/Debug/net10.0/
  .NETCoreApp,Version=v10.0.AssemblyAttributes.cs

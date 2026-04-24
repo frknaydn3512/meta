@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Hangfire;
 using AdReport.Application.Interfaces;
@@ -174,6 +175,8 @@ public class ReportService : IReportService
             var pdfPath = await _pdfGenerator.GenerateAsync(reportData);
 
             report.PdfPath = pdfPath;
+            report.InsightsJson = JsonSerializer.Serialize(insights);
+            report.CampaignsJson = JsonSerializer.Serialize(campaigns);
             report.Status = ReportStatus.Completed;
             report.CompletedAt = DateTime.UtcNow;
         }
@@ -220,11 +223,13 @@ public class ReportService : IReportService
             }
         };
 
-        // Re-fetch insights from Meta API for live public view
-        // (not stored in DB to avoid stale data)
-        // For MVP we return the stored data — PDF is the source of truth
-        data.Insights = new();
-        data.Campaigns = new();
+        data.Insights = string.IsNullOrEmpty(report.InsightsJson)
+            ? new MetaInsightsDto()
+            : JsonSerializer.Deserialize<MetaInsightsDto>(report.InsightsJson) ?? new MetaInsightsDto();
+
+        data.Campaigns = string.IsNullOrEmpty(report.CampaignsJson)
+            ? new List<MetaCampaignDto>()
+            : JsonSerializer.Deserialize<List<MetaCampaignDto>>(report.CampaignsJson) ?? new List<MetaCampaignDto>();
 
         return ApiResponse<ReportDataDto>.SuccessResult(data);
     }

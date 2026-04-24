@@ -42,12 +42,12 @@ public static class EmailTemplates
                       <tr>
                         <td style="padding:40px;">
                           <h2 style="margin:0 0 12px;color:#111827;font-size:20px;">
-                            Your {reportPeriod} Ads Report Is Ready
+                            {reportPeriod} Reklam Raporunuz Hazır
                           </h2>
                           <p style="margin:0 0 24px;color:#6b7280;font-size:15px;line-height:1.6;">
-                            Hi {clientName},<br/><br/>
-                            Your monthly Meta Ads performance report for <strong>{reportPeriod}</strong>
-                            has been prepared. Click the button below to view the full report.
+                            Merhaba {clientName},<br/><br/>
+                            <strong>{reportPeriod}</strong> dönemine ait Meta Ads performans raporunuz
+                            hazırlandı. Raporunuzu görüntülemek için aşağıdaki butona tıklayın.
                           </p>
 
                           <!-- CTA Button -->
@@ -56,14 +56,14 @@ public static class EmailTemplates
                               <td style="border-radius:6px;background:{primaryColor};">
                                 <a href="{reportUrl}"
                                    style="display:inline-block;padding:14px 32px;color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;border-radius:6px;">
-                                  View Report
+                                  Raporu Görüntüle
                                 </a>
                               </td>
                             </tr>
                           </table>
 
                           <p style="margin:24px 0 0;color:#9ca3af;font-size:13px;">
-                            Or copy this link into your browser:<br/>
+                            Ya da bu bağlantıyı tarayıcınıza kopyalayın:<br/>
                             <a href="{reportUrl}" style="color:{primaryColor};word-break:break-all;">{reportUrl}</a>
                           </p>
                         </td>
@@ -73,7 +73,7 @@ public static class EmailTemplates
                       <tr>
                         <td style="padding:20px 40px;border-top:1px solid #e5e7eb;text-align:center;">
                           <p style="margin:0;color:#9ca3af;font-size:12px;">
-                            Sent by {agencyName} · Powered by AdReport
+                            {agencyName} tarafından gönderildi
                           </p>
                         </td>
                       </tr>

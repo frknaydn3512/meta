@@ -9,7 +9,7 @@ namespace AdReport.API.Controllers;
 [ApiController]
 [Route("api/reports")]
 [Authorize]
-public class ReportsController : ControllerBase
+public class ReportsController : ApiControllerBase
 {
     private readonly IReportService _reportService;
     private readonly IReportEmailService _reportEmailService;
@@ -20,19 +20,13 @@ public class ReportsController : ControllerBase
         _reportEmailService = reportEmailService;
     }
 
-    private int GetCurrentAgencyId()
-    {
-        var agencyIdClaim = User.FindFirst("agencyId")?.Value;
-        return int.Parse(agencyIdClaim!);
-    }
-
     /// <summary>
     /// Creates a new report and enqueues background generation.
     /// </summary>
     [HttpPost]
     public async Task<ActionResult<ApiResponse<ReportDto>>> CreateReport(CreateReportDto request)
     {
-        var agencyId = GetCurrentAgencyId();
+        if (TryGetAgencyId() is not int agencyId) return AgencyNotFound<ApiResponse<ReportDto>>();
         var result = await _reportService.CreateReportAsync(agencyId, request);
 
         if (!result.Success)
@@ -47,7 +41,7 @@ public class ReportsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<ApiResponse<List<ReportDto>>>> GetReports()
     {
-        var agencyId = GetCurrentAgencyId();
+        if (TryGetAgencyId() is not int agencyId) return AgencyNotFound<ApiResponse<List<ReportDto>>>();
         var result = await _reportService.GetReportsAsync(agencyId);
         return Ok(result);
     }
@@ -58,7 +52,7 @@ public class ReportsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<ApiResponse<ReportDto>>> GetReport(int id)
     {
-        var agencyId = GetCurrentAgencyId();
+        if (TryGetAgencyId() is not int agencyId) return AgencyNotFound<ApiResponse<ReportDto>>();
         var result = await _reportService.GetReportByIdAsync(agencyId, id);
 
         if (!result.Success)
@@ -73,7 +67,7 @@ public class ReportsController : ControllerBase
     [HttpGet("{id}/download")]
     public async Task<IActionResult> DownloadReport(int id)
     {
-        var agencyId = GetCurrentAgencyId();
+        if (TryGetAgencyId() is not int agencyId) return Unauthorized();
         var result = await _reportService.GetReportByIdAsync(agencyId, id);
 
         if (!result.Success)
@@ -102,7 +96,7 @@ public class ReportsController : ControllerBase
     [HttpPost("{id}/send-email")]
     public async Task<ActionResult<ApiResponse<object>>> SendEmail(int id)
     {
-        var agencyId = GetCurrentAgencyId();
+        if (TryGetAgencyId() is not int agencyId) return AgencyNotFound<ApiResponse<object>>();
         var reportResult = await _reportService.GetReportByIdAsync(agencyId, id);
 
         if (!reportResult.Success)

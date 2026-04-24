@@ -14,6 +14,8 @@ public class Report
     public string? PdfPath { get; set; }
     public string Slug { get; set; } = string.Empty;
     public string? ErrorMessage { get; set; }
+    public string? InsightsJson { get; set; }
+    public string? CampaignsJson { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? CompletedAt { get; set; }
 

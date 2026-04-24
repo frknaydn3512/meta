@@ -65,7 +65,7 @@ public class ReportEmailService : IReportEmailService
         await _emailService.SendReportEmailAsync(
             toEmail: report.Client.Email,
             toName: report.Client.Name,
-            subject: $"Your {period} Ads Report Is Ready — {template?.AgencyDisplayName ?? report.Agency.Name}",
+            subject: $"{period} Meta Reklam Raporunuz Hazır — {template?.AgencyDisplayName ?? report.Agency.Name}",
             htmlBody: html,
             pdfAttachment: pdfBytes,
             pdfFileName: pdfFileName);

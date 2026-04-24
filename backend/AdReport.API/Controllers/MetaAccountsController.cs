@@ -9,7 +9,7 @@ namespace AdReport.API.Controllers;
 [ApiController]
 [Route("api/meta-accounts")]
 [Authorize]
-public class MetaAccountsController : ControllerBase
+public class MetaAccountsController : ApiControllerBase
 {
     private readonly IMetaAccountService _metaAccountService;
     private readonly IConfiguration _configuration;
@@ -20,19 +20,13 @@ public class MetaAccountsController : ControllerBase
         _configuration = configuration;
     }
 
-    private int GetCurrentAgencyId()
-    {
-        var agencyIdClaim = User.FindFirst("agencyId")?.Value;
-        return int.Parse(agencyIdClaim!);
-    }
-
     /// <summary>
     /// Returns all Meta ad accounts connected to the current agency.
     /// </summary>
     [HttpGet]
     public async Task<ActionResult<ApiResponse<List<MetaAccountDto>>>> GetAccounts()
     {
-        var agencyId = GetCurrentAgencyId();
+        if (TryGetAgencyId() is not int agencyId) return AgencyNotFound<ApiResponse<List<MetaAccountDto>>>();
         var result = await _metaAccountService.GetAccountsAsync(agencyId);
         return Ok(result);
     }
@@ -43,7 +37,7 @@ public class MetaAccountsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<ApiResponse<MetaAccountDto>>> ConnectAccount(ConnectMetaAccountDto request)
     {
-        var agencyId = GetCurrentAgencyId();
+        if (TryGetAgencyId() is not int agencyId) return AgencyNotFound<ApiResponse<MetaAccountDto>>();
         var result = await _metaAccountService.ConnectAccountAsync(agencyId, request);
 
         if (!result.Success)
@@ -58,7 +52,7 @@ public class MetaAccountsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<ActionResult<ApiResponse<object>>> DisconnectAccount(int id)
     {
-        var agencyId = GetCurrentAgencyId();
+        if (TryGetAgencyId() is not int agencyId) return AgencyNotFound<ApiResponse<object>>();
         var result = await _metaAccountService.DisconnectAccountAsync(agencyId, id);
 
         if (!result.Success)
@@ -94,7 +88,7 @@ public class MetaAccountsController : ControllerBase
     [HttpPost("oauth/exchange")]
     public async Task<ActionResult<ApiResponse<MetaOAuthExchangeResultDto>>> ExchangeOAuth(MetaOAuthExchangeDto request)
     {
-        var agencyId = GetCurrentAgencyId();
+        if (TryGetAgencyId() is not int agencyId) return AgencyNotFound<ApiResponse<MetaOAuthExchangeResultDto>>();
         var result = await _metaAccountService.ExchangeOAuthCodeAsync(agencyId, request);
 
         if (!result.Success)
@@ -109,7 +103,7 @@ public class MetaAccountsController : ControllerBase
     [HttpPost("oauth/confirm")]
     public async Task<ActionResult<ApiResponse<MetaAccountDto>>> ConfirmOAuth(MetaOAuthConfirmDto request)
     {
-        var agencyId = GetCurrentAgencyId();
+        if (TryGetAgencyId() is not int agencyId) return AgencyNotFound<ApiResponse<MetaAccountDto>>();
         var result = await _metaAccountService.ConfirmOAuthConnectionAsync(agencyId, request);
 
         if (!result.Success)

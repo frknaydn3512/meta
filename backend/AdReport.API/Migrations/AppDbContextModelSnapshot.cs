@@ -178,6 +178,12 @@ namespace AdReport.API.Migrations
                     b.Property<string>("ErrorMessage")
                         .HasColumnType("text");
 
+                    b.Property<string>("InsightsJson")
+                        .HasColumnType("text");
+
+                    b.Property<string>("CampaignsJson")
+                        .HasColumnType("text");
+
                     b.Property<int>("MetaAccountId")
                         .HasColumnType("integer");
 

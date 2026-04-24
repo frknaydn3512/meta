@@ -27,7 +27,7 @@ export default function PublicReport() {
     </div>
   )
 
-  const { template: tmpl, insights: ins } = report
+  const { template: tmpl, insights: ins, campaigns } = report
   const primary = tmpl?.primaryColor ?? '#1a56db'
   const MONTHS = t('months')
   const period = `${MONTHS[report.month - 1]} ${report.year}`
@@ -58,6 +58,36 @@ export default function PublicReport() {
               <MetricCard label={t('ctr')} value={`${(ins.ctr ?? 0).toFixed(2)}%`} />
               <MetricCard label={t('cpc')} value={`${report.currency} ${(ins.cpc ?? 0).toFixed(2)}`} />
               <MetricCard label={t('conversions')} value={(ins.conversions ?? 0).toLocaleString()} />
+            </div>
+          </div>
+        )}
+
+        {campaigns && campaigns.length > 0 && (
+          <div>
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">{t('campaigns')}</h2>
+            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50 border-b border-gray-200">
+                  <tr>
+                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-500">{t('campaign_name')}</th>
+                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-500">{t('status')}</th>
+                    <th className="text-right px-4 py-3 text-xs font-medium text-gray-500">{t('total_spend')}</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {campaigns.map((c) => (
+                    <tr key={c.id}>
+                      <td className="px-4 py-3 text-gray-900">{c.name}</td>
+                      <td className="px-4 py-3">
+                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${c.status === 'ACTIVE' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                          {c.status}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-right text-gray-900">{report.currency} {(c.spend ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         )}

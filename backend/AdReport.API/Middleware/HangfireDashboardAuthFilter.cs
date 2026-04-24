@@ -14,6 +14,6 @@ public class HangfireDashboardAuthFilter : IDashboardAuthorizationFilter
                       (httpContext.Connection.RemoteIpAddress.Equals(httpContext.Connection.LocalIpAddress)
                        || httpContext.Connection.RemoteIpAddress.ToString() == "127.0.0.1"
                        || httpContext.Connection.RemoteIpAddress.ToString() == "::1");
-        return isLocal || httpContext.User.Identity?.IsAuthenticated == true;
+        return isLocal;
     }
 }
