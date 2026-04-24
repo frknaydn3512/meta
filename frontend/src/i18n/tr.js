@@ -56,6 +56,7 @@ export default {
   meta_ad_accounts: 'Meta Reklam Hesapları',
   connect_account: '+ Hesap Bağla',
   connect_with_meta: "Meta ile Bağlan",
+  manual_token: 'Manuel Token',
   connect_meta_account: 'Meta Reklam Hesabı Bağla',
   account_id: 'Hesap ID',
   account_id_placeholder: 'örn. 123456789',

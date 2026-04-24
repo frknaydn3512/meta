@@ -56,6 +56,7 @@ export default {
   meta_ad_accounts: 'Meta Ad Accounts',
   connect_account: '+ Connect Account',
   connect_with_meta: 'Connect with Meta',
+  manual_token: 'Manual Token',
   connect_meta_account: 'Connect Meta Ad Account',
   account_id: 'Account ID',
   account_id_placeholder: 'e.g. 123456789',
