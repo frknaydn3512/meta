@@ -1,6 +1,6 @@
 ﻿import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { getReports, createReport } from '../api/reports'
+import { getReports, createReport, downloadReport } from '../api/reports'
 import { getClients } from '../api/clients'
 import { getMetaAccounts } from '../api/metaAccounts'
 import useT from '../hooks/useT'
@@ -33,6 +33,20 @@ export default function Reports() {
 
   const filteredAccounts = accounts.filter((a) => !form.clientId || a.clientId === Number(form.clientId))
   const MONTHS = t('months')
+
+  async function handleDownload(id) {
+    try {
+      const { data } = await downloadReport(id)
+      const url = URL.createObjectURL(new Blob([data], { type: 'application/pdf' }))
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `report_${id}.pdf`
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch {
+      toast.error(t('download_failed'))
+    }
+  }
 
   const STATUS_LABEL = {
     Completed: t('status_completed'),
@@ -113,9 +127,20 @@ export default function Reports() {
               </Link>
               <p className="text-xs text-gray-500">{r.accountName}</p>
             </div>
-            <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${STATUS_COLOR[r.status] ?? ''}`}>
-              {STATUS_LABEL[r.status] ?? r.status}
-            </span>
+            <div className="flex items-center gap-3">
+              <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${STATUS_COLOR[r.status] ?? ''}`}>
+                {STATUS_LABEL[r.status] ?? r.status}
+              </span>
+              {r.status === 'Completed' && (
+                <button
+                  onClick={() => handleDownload(r.id)}
+                  className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+                  title={t('download_pdf')}
+                >
+                  ↓ PDF
+                </button>
+              )}
+            </div>
           </div>
         ))}
       </div>

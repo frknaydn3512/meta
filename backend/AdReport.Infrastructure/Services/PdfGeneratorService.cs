@@ -21,6 +21,10 @@ public class PdfGeneratorService : IPdfGeneratorService
         Directory.CreateDirectory(_outputDir);
     }
 
+    private static readonly string[] TurkishMonths =
+        ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
+         "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
+
     /// <inheritdoc/>
     public Task<string> GenerateAsync(ReportDataDto data)
     {
@@ -28,7 +32,7 @@ public class PdfGeneratorService : IPdfGeneratorService
         var filePath = Path.Combine(_outputDir, fileName);
 
         var primary = data.Template.PrimaryColor;
-        var monthLabel = new DateTime(data.Year, data.Month, 1).ToString("MMMM yyyy");
+        var monthLabel = $"{TurkishMonths[data.Month - 1]} {data.Year}";
         var logoBytes = ResolveLogoBytes(data.Template.LogoUrl);
 
         var document = Document.Create(container =>
@@ -70,10 +74,10 @@ public class PdfGeneratorService : IPdfGeneratorService
                     col.Item().Text(data.Template.AgencyDisplayName)
                         .FontSize(18).Bold().FontColor(primaryColor);
 
-                col.Item().PaddingTop(4).Text($"Meta Ads Report — {monthLabel}")
+                col.Item().PaddingTop(4).Text($"Meta Reklam Raporu — {monthLabel}")
                     .FontSize(12).FontColor(Colors.Grey.Darken2);
 
-                col.Item().PaddingTop(2).Text($"Client: {data.ClientName} | Account: {data.AccountName}")
+                col.Item().PaddingTop(2).Text($"Müşteri: {data.ClientName} | Hesap: {data.AccountName}")
                     .FontSize(10).FontColor(Colors.Grey.Medium);
             });
 
@@ -88,29 +92,29 @@ public class PdfGeneratorService : IPdfGeneratorService
             col.Spacing(16);
 
             // Metric cards
-            col.Item().Text("Performance Overview").FontSize(13).Bold().FontColor(primaryColor);
+            col.Item().Text("Performans Özeti").FontSize(13).Bold().FontColor(primaryColor);
             col.Item().Row(row =>
             {
                 row.Spacing(8);
-                AddMetricCard(row.RelativeItem(), "Total Spend", $"{data.Currency} {data.Insights.Spend:N2}");
-                AddMetricCard(row.RelativeItem(), "Impressions", data.Insights.Impressions.ToString("N0"));
-                AddMetricCard(row.RelativeItem(), "Clicks", data.Insights.Clicks.ToString("N0"));
+                AddMetricCard(row.RelativeItem(), "Toplam Harcama", $"{data.Currency} {data.Insights.Spend:N2}");
+                AddMetricCard(row.RelativeItem(), "Gösterim", data.Insights.Impressions.ToString("N0"));
+                AddMetricCard(row.RelativeItem(), "Tıklama", data.Insights.Clicks.ToString("N0"));
                 AddMetricCard(row.RelativeItem(), "ROAS", $"{data.Insights.Roas:F2}x");
             });
 
             col.Item().Row(row =>
             {
                 row.Spacing(8);
-                AddMetricCard(row.RelativeItem(), "CTR", $"{data.Insights.Ctr:F2}%");
-                AddMetricCard(row.RelativeItem(), "CPC", $"{data.Currency} {data.Insights.Cpc:N2}");
-                AddMetricCard(row.RelativeItem(), "Conversions", data.Insights.Conversions.ToString("N0"));
-                row.RelativeItem(); // empty spacer
+                AddMetricCard(row.RelativeItem(), "TO (CTR)", $"{data.Insights.Ctr:F2}%");
+                AddMetricCard(row.RelativeItem(), "TBM (CPC)", $"{data.Currency} {data.Insights.Cpc:N2}");
+                AddMetricCard(row.RelativeItem(), "Dönüşüm", data.Insights.Conversions.ToString("N0"));
+                row.RelativeItem();
             });
 
             // Campaigns table
             if (data.Campaigns.Count > 0)
             {
-                col.Item().PaddingTop(8).Text("Campaigns").FontSize(13).Bold().FontColor(primaryColor);
+                col.Item().PaddingTop(8).Text("Kampanyalar").FontSize(13).Bold().FontColor(primaryColor);
                 col.Item().Table(table =>
                 {
                     table.ColumnsDefinition(cols =>
@@ -126,15 +130,15 @@ public class PdfGeneratorService : IPdfGeneratorService
                     table.Header(header =>
                     {
                         header.Cell().Background(primaryColor).Padding(6)
-                            .Text("Campaign").Bold().FontColor(Colors.White).FontSize(9);
+                            .Text("Kampanya").Bold().FontColor(Colors.White).FontSize(9);
                         header.Cell().Background(primaryColor).Padding(6)
-                            .Text("Objective").Bold().FontColor(Colors.White).FontSize(9);
+                            .Text("Hedef").Bold().FontColor(Colors.White).FontSize(9);
                         header.Cell().Background(primaryColor).Padding(6)
-                            .Text("Status").Bold().FontColor(Colors.White).FontSize(9);
+                            .Text("Durum").Bold().FontColor(Colors.White).FontSize(9);
                         header.Cell().Background(primaryColor).Padding(6)
-                            .Text("Impressions").Bold().FontColor(Colors.White).FontSize(9);
+                            .Text("Gösterim").Bold().FontColor(Colors.White).FontSize(9);
                         header.Cell().Background(primaryColor).Padding(6)
-                            .Text("Clicks").Bold().FontColor(Colors.White).FontSize(9);
+                            .Text("Tıklama").Bold().FontColor(Colors.White).FontSize(9);
                     });
 
                     // Rows
@@ -182,9 +186,9 @@ public class PdfGeneratorService : IPdfGeneratorService
 
             row.ConstantItem(80).AlignRight().Text(text =>
             {
-                text.Span("Page ").FontSize(8).FontColor(Colors.Grey.Medium);
+                text.Span("Sayfa ").FontSize(8).FontColor(Colors.Grey.Medium);
                 text.CurrentPageNumber().FontSize(8).FontColor(Colors.Grey.Medium);
-                text.Span(" of ").FontSize(8).FontColor(Colors.Grey.Medium);
+                text.Span(" / ").FontSize(8).FontColor(Colors.Grey.Medium);
                 text.TotalPages().FontSize(8).FontColor(Colors.Grey.Medium);
             });
         });
