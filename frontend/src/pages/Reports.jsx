@@ -23,10 +23,10 @@ export default function Reports() {
   const t = useT()
 
   async function load() {
-    const [r, c, a] = await Promise.all([getReports(), getClients(), getMetaAccounts()])
-    setReports(r.data.data ?? [])
-    setClients(c.data.data ?? [])
-    setAccounts(a.data.data ?? [])
+    const [r, c, a] = await Promise.allSettled([getReports(), getClients(), getMetaAccounts()])
+    if (r.status === 'fulfilled') setReports(r.value.data.data ?? [])
+    if (c.status === 'fulfilled') setClients(c.value.data.data ?? [])
+    if (a.status === 'fulfilled') setAccounts(a.value.data.data ?? [])
   }
 
   useEffect(() => { load() }, [])
